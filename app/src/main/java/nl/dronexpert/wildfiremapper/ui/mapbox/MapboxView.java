@@ -28,7 +28,7 @@ public class MapboxView extends BaseScreenView<MapboxScreen> {
         mapView.onCreate(null);
     }
 
-    public void getMapAsync(OnMapReadyCallback onMapReadyCallback) {
-        mapView.getMapAsync(onMapReadyCallback);
+    public MapView getMapView() {
+        return mapView;
     }
 }
