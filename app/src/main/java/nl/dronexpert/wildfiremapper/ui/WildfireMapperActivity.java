@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.Mapbox;
+
 import com.wealthfront.magellan.ActionBarConfig;
 import com.wealthfront.magellan.NavigationListener;
 import com.wealthfront.magellan.Navigator;
@@ -16,9 +17,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import nl.dronexpert.wildfiremapper.R;
 
-import static nl.dronexpert.wildfiremapper.WildfireMapperApplication.*;
+import nl.dronexpert.wildfiremapper.R;
+import nl.dronexpert.wildfiremapper.WildfireMapperApplication;
+import nl.dronexpert.wildfiremapper.di.component.ActivityComponent;
+import nl.dronexpert.wildfiremapper.di.component.DaggerActivityComponent;
+import nl.dronexpert.wildfiremapper.di.module.ActivityModule;
 
 /**
  * Created by Mathijs de Groot on 06/06/2018.
@@ -26,21 +30,34 @@ import static nl.dronexpert.wildfiremapper.WildfireMapperApplication.*;
 public class WildfireMapperActivity extends AppCompatActivity implements NavigationListener {
 
     @Inject
-    Navigator navigator;
+    Mapbox mapbox;
 
     @Inject
-    Mapbox mapbox;
+    Navigator navigator;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    private static ActivityComponent activityComponent;
+
+    public static ActivityComponent getActivityComponent() {
+        return activityComponent;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wildfire_mapper_activity);
         ButterKnife.bind(this);
-        application(this).injector().inject(this);
         setSupportActionBar(toolbar);
+
+        activityComponent = DaggerActivityComponent.builder()
+                .activityModule(new ActivityModule(this))
+                .applicationComponent(WildfireMapperApplication.getComponent())
+                .build();
+
+        activityComponent.inject(this);
+
         navigator.onCreate(this, savedInstanceState);
     }
 
@@ -60,6 +77,7 @@ public class WildfireMapperActivity extends AppCompatActivity implements Navigat
         } else {
             hideActionBar(actionBarConfig.animated());
         }
+
         if (navigator.atRoot()) {
 //TODO            toolbar.setNavigationIcon(R.drawable.action_bar_icon);
         } else {

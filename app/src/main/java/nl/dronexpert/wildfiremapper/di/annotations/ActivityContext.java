@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Qualifier;
 
 /**
- * Created by Mathijs de Groot on 06/06/2018.
+ * Created by Mathijs de Groot on 07/06/2018.
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ApplicationContext {
+public @interface ActivityContext {
 
 }

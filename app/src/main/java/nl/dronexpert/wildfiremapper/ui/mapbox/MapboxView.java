@@ -1,11 +1,8 @@
 package nl.dronexpert.wildfiremapper.ui.mapbox;
 
 import android.content.Context;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 
 import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.wealthfront.magellan.BaseScreenView;
 
 import butterknife.BindView;
@@ -23,7 +20,7 @@ public class MapboxView extends BaseScreenView<MapboxScreen> {
 
     public MapboxView(Context context) {
         super(context);
-        inflate(context, R.layout.mapbox, this);
+        inflate(context, R.layout.mapbox_screen, this);
         ButterKnife.bind(this);
         mapView.onCreate(null);
     }

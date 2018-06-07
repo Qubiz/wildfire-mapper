@@ -1,12 +1,13 @@
 package nl.dronexpert.wildfiremapper.ui.mapbox;
 
 import android.content.Context;
-import android.util.Log;
+import android.location.Location;
 
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-
 import com.wealthfront.magellan.Screen;
 
 import nl.dronexpert.wildfiremapper.R;
@@ -14,7 +15,7 @@ import nl.dronexpert.wildfiremapper.R;
 /**
  * Created by Mathijs de Groot on 06/06/2018.
  */
-public class MapboxScreen extends Screen<MapboxView> implements OnMapReadyCallback, MapboxMap.OnCameraMoveListener {
+public class MapboxScreen extends Screen<MapboxView> implements OnMapReadyCallback, MapboxMap.OnCameraMoveListener{
 
     private static final String TAG = MapboxScreen.class.getSimpleName();
 
@@ -25,7 +26,7 @@ public class MapboxScreen extends Screen<MapboxView> implements OnMapReadyCallba
     protected MapboxView createView(Context context) {
         MapboxView mapboxView = new MapboxView(context);
         mapboxView.getMapView().getMapAsync(this);
-        Log.d(TAG, "createView()");
+
         return mapboxView;
     }
 
@@ -51,11 +52,17 @@ public class MapboxScreen extends Screen<MapboxView> implements OnMapReadyCallba
 
     @Override
     protected boolean shouldShowActionBar() {
-        return false;
+        return true;
     }
 
     @Override
     protected boolean shouldAnimateActionBar() {
         return false;
+    }
+
+    private void setCameraPosition(Location location) {
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(location.getLatitude(), location.getLongitude()), 20
+        ));
     }
 }

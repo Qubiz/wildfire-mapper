@@ -1,7 +1,6 @@
 package nl.dronexpert.wildfiremapper;
 
 import android.app.Application;
-import android.content.Context;
 
 import nl.dronexpert.wildfiremapper.di.component.ApplicationComponent;
 import nl.dronexpert.wildfiremapper.di.component.DaggerApplicationComponent;
@@ -12,21 +11,20 @@ import nl.dronexpert.wildfiremapper.di.module.ApplicationModule;
  */
 public class WildfireMapperApplication extends Application {
 
-    private ApplicationComponent appComponent;
-
-    public static WildfireMapperApplication application(Context context) {
-        return (WildfireMapperApplication) context.getApplicationContext();
-    }
+    private static ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        appComponent = DaggerApplicationComponent.builder()
+
+        applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+
     }
 
-    public ApplicationComponent injector() {
-        return appComponent;
+    public static ApplicationComponent getComponent() {
+        return applicationComponent;
     }
 }

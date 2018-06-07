@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="nl.dronexpert.wildfiremapper">
 
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -21,5 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name=".services.ble.BleDeviceScanService" />
     </application>
 </manifest>
