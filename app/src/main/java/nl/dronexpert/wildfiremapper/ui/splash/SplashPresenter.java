@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import nl.dronexpert.wildfiremapper.data.DataManager;
+import nl.dronexpert.wildfiremapper.di.annotations.ActivityContext;
 import nl.dronexpert.wildfiremapper.ui.base.BasePresenter;
 import nl.dronexpert.wildfiremapper.ui.splash.mvp.SplashMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.splash.mvp.SplashMvpView;
@@ -20,7 +21,7 @@ public class SplashPresenter<V extends SplashMvpView> extends BasePresenter<V> i
     @Inject
     public SplashPresenter(DataManager dataManager,
                            SchedulerProvider schedulerProvider,
-                           CompositeDisposable compositeDisposable) {
+                           @ActivityContext CompositeDisposable compositeDisposable) {
 
         super(dataManager, schedulerProvider, compositeDisposable);
     }

@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'org.greenrobot.greendao'
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -61,6 +63,12 @@ dependencies {
     implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion"
 
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.5.3'
+
+    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    implementation "com.mikepenz:iconics-core:3.0.2@aar"
+    implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.4@aar'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

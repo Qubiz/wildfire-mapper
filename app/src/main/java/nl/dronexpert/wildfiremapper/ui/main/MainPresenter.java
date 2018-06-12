@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import nl.dronexpert.wildfiremapper.data.DataManager;
+import nl.dronexpert.wildfiremapper.di.annotations.ActivityContext;
 import nl.dronexpert.wildfiremapper.ui.base.BasePresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanActivity;
 import nl.dronexpert.wildfiremapper.ui.main.mvp.MainMvpPresenter;
@@ -19,7 +20,7 @@ public class MainPresenter<V extends MainMvpView> extends BasePresenter<V> imple
     @Inject
     public MainPresenter(DataManager dataManager,
                          SchedulerProvider schedulerProvider,
-                         CompositeDisposable compositeDisposable) {
+                         @ActivityContext CompositeDisposable compositeDisposable) {
         super(dataManager, schedulerProvider, compositeDisposable);
     }
 

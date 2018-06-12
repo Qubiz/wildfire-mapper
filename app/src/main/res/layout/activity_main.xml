@@ -57,13 +57,6 @@
         app:itemTextColor="@color/black_effective"
         app:menu="@menu/drawer">
 
-        <TextView
-            android:id="@+id/tv_app_version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:text="v1.0"
-            android:padding="5dp" />
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

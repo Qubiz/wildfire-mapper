@@ -9,7 +9,11 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ListView;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -17,6 +21,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nl.dronexpert.wildfiremapper.R;
+import nl.dronexpert.wildfiremapper.data.database.model.BleDevice;
+import nl.dronexpert.wildfiremapper.services.ble.BleDeviceScanService;
 import nl.dronexpert.wildfiremapper.ui.base.BaseActivity;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpView;
@@ -29,6 +35,12 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.devices_list_view)
+    ListView devicesListView;
+
+    @Inject
+    DeviceScanResultsAdapter scanResultsAdapter;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, DeviceScanActivity.class);
@@ -53,6 +65,7 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        scanResultsAdapter.setOnItemClickListener(presenter);
     }
 
     @Override
@@ -60,7 +73,7 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent upIntent = NavUtils.getParentActivityIntent(this);
-                Objects.requireNonNull(upIntent).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Objects.requireNonNull(upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                     TaskStackBuilder.create(this)
                             .addNextIntentWithParentStack(upIntent)
@@ -77,5 +90,20 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
     protected void onDestroy() {
         presenter.onDetach();
         super.onDestroy();
+    }
+
+    @Override
+    public void addBleDevices(List<BleDevice> deviceList) {
+        scanResultsAdapter.addAll(deviceList);
+    }
+
+    @Override
+    public void addBleDevice(BleDevice bleDevice) {
+        scanResultsAdapter.add(bleDevice);
+    }
+
+    @Override
+    public void clearBleDevices() {
+        scanResultsAdapter.clear();
     }
 }

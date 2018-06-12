@@ -17,7 +17,8 @@ import nl.dronexpert.wildfiremapper.data.network.ApplicationApiHelper;
 import nl.dronexpert.wildfiremapper.data.preferences.ApplicationPreferencesHelper;
 import nl.dronexpert.wildfiremapper.data.preferences.PreferencesHelper;
 import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
-import nl.dronexpert.wildfiremapper.di.annotations.MapboxInfo;
+import nl.dronexpert.wildfiremapper.di.annotations.DatabaseInfo;
+import nl.dronexpert.wildfiremapper.utils.AppConstants;
 
 /**
  * Created by Mathijs de Groot on 06/06/2018.
@@ -66,6 +67,10 @@ public class ApplicationModule {
         return applicationApiHelper;
     }
 
-
+    @Provides
+    @DatabaseInfo
+    String provideDatabaseName() {
+        return AppConstants.DB_NAME;
+    }
 
 }

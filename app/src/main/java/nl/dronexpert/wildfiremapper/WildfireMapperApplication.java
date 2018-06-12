@@ -38,4 +38,5 @@ public class WildfireMapperApplication extends Application {
     public ApplicationComponent getComponent() {
         return applicationComponent;
     }
+
 }

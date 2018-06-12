@@ -9,6 +9,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import nl.dronexpert.wildfiremapper.di.annotations.ActivityContext;
 import nl.dronexpert.wildfiremapper.di.annotations.PerActivity;
 import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanPresenter;
+import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanResultsAdapter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpView;
 import nl.dronexpert.wildfiremapper.ui.main.MainPresenter;
@@ -40,6 +41,7 @@ public class ActivityModule {
         return activity;
     }
 
+    @ActivityContext
     @Provides
     CompositeDisposable provideCompositeDisposable() {
         return new CompositeDisposable();
@@ -66,6 +68,11 @@ public class ActivityModule {
     @PerActivity
     DeviceScanMvpPresenter<DeviceScanMvpView> provideDeviceScanPresenter(DeviceScanPresenter<DeviceScanMvpView> presenter) {
         return presenter;
+    }
+
+    @Provides
+    DeviceScanResultsAdapter provideScanResultsAdapter(AppCompatActivity activity) {
+        return new DeviceScanResultsAdapter(activity);
     }
 
     //TODO Implement providers for the presenters of the views
