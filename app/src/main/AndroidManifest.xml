@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="nl.dronexpert.wildfiremapper">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -15,13 +16,22 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.WildfireMapperActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:launchMode="singleTop">
+        </activity>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppThemeFullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.devicescan.DeviceScanActivity" />
+
         <service android:name=".services.ble.BleDeviceScanService" />
     </application>
 </manifest>

@@ -2,29 +2,28 @@ package nl.dronexpert.wildfiremapper.di.module;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
-
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.mapboxsdk.Mapbox;
-import com.wealthfront.magellan.Navigator;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import nl.dronexpert.wildfiremapper.WildfireMapperApplication;
-import nl.dronexpert.wildfiremapper.di.annotations.ActivityContext;
+
+import nl.dronexpert.wildfiremapper.data.ApplicationDataManager;
+import nl.dronexpert.wildfiremapper.data.DataManager;
+import nl.dronexpert.wildfiremapper.data.database.ApplicationDatabaseHelper;
+import nl.dronexpert.wildfiremapper.data.database.DatabaseHelper;
+import nl.dronexpert.wildfiremapper.data.network.ApiHelper;
+import nl.dronexpert.wildfiremapper.data.network.ApplicationApiHelper;
+import nl.dronexpert.wildfiremapper.data.preferences.ApplicationPreferencesHelper;
+import nl.dronexpert.wildfiremapper.data.preferences.PreferencesHelper;
 import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
-import nl.dronexpert.wildfiremapper.ui.WildfireMapperActivity;
-import nl.dronexpert.wildfiremapper.ui.mapbox.MapboxScreen;
-import nl.dronexpert.wildfiremapper.utils.Constants;
+import nl.dronexpert.wildfiremapper.di.annotations.MapboxInfo;
 
 /**
  * Created by Mathijs de Groot on 06/06/2018.
  */
 @Module
-public final class ApplicationModule {
+public class ApplicationModule {
 
     private final Application application;
 
@@ -45,14 +44,28 @@ public final class ApplicationModule {
 
     @Provides
     @Singleton
-    Mapbox provideMapbox(@ApplicationContext Context context) {
-        return Mapbox.getInstance(context, Constants.Mapbox.MAPBOX_ACCESS_TOKEN);
+    DataManager provideDataManager(ApplicationDataManager applicationDataManager) {
+        return applicationDataManager;
     }
 
     @Provides
     @Singleton
-    Navigator provideNavigator() {
-        return Navigator.withRoot(new MapboxScreen()).build();
+    DatabaseHelper provideDatabaseHelper(ApplicationDatabaseHelper applicationDatabaseHelper) {
+        return applicationDatabaseHelper;
     }
+
+    @Provides
+    @Singleton
+    PreferencesHelper providePreferencesHelper(ApplicationPreferencesHelper applicationPreferencesHelper) {
+        return applicationPreferencesHelper;
+    }
+
+    @Provides
+    @Singleton
+    ApiHelper provideApiHelper(ApplicationApiHelper applicationApiHelper) {
+        return applicationApiHelper;
+    }
+
+
 
 }
