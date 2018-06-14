@@ -1,5 +1,7 @@
 package nl.dronexpert.wildfiremapper.data.database;
 
+import android.util.Log;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import io.reactivex.annotations.Nullable;
 import nl.dronexpert.wildfiremapper.data.database.events.DatabaseUpdateEvent;
 import nl.dronexpert.wildfiremapper.data.database.events.DatabaseUpdateEvent.DaoType;
 import nl.dronexpert.wildfiremapper.data.database.model.BleDevice;
+import nl.dronexpert.wildfiremapper.data.database.model.BleDeviceDao;
 import nl.dronexpert.wildfiremapper.data.database.model.DaoMaster;
 import nl.dronexpert.wildfiremapper.data.database.model.DaoSession;
 
@@ -21,6 +24,7 @@ import static nl.dronexpert.wildfiremapper.data.database.events.DatabaseUpdateEv
 @Singleton
 public class ApplicationDatabaseHelper implements DatabaseHelper {
 
+    private static final String TAG = ApplicationDatabaseHelper.class.getSimpleName();
     private final DaoSession daoSession;
 
     @Inject
@@ -31,7 +35,7 @@ public class ApplicationDatabaseHelper implements DatabaseHelper {
     @Override
     public Observable<Long> insertBleDevice(BleDevice device) {
         return Observable.fromCallable(() -> {
-            long id = daoSession.getBleDeviceDao().insert(device);
+            long id = daoSession.getBleDeviceDao().insertOrReplace(device);
             postDatabaseUpdateEvent(DaoType.BLE_DEVICE_DAO, UpdateType.INSERT, id);
             return id;
         });
@@ -53,6 +57,28 @@ public class ApplicationDatabaseHelper implements DatabaseHelper {
             postDatabaseUpdateEvent(DaoType.BLE_DEVICE_DAO, UpdateType.LIST_SAVE, null);
             return true;
         });
+    }
+
+    @Override
+    public Observable<Boolean> containsDevice(String macAddress) {
+        return Observable.fromCallable(() -> {
+            List<BleDevice> devices = daoSession.getBleDeviceDao().queryBuilder()
+                    .where(BleDeviceDao.Properties.MacAddress.eq(macAddress))
+                    .list();
+            return !devices.isEmpty();
+        });
+    }
+
+    @Override
+    public Observable<BleDevice> getBleDevice(String macAddress) {
+        // TODO Implement getBleDevice(String macAddress)
+        return null;
+    }
+
+    @Override
+    public Observable<Boolean> setBleDeviceConnected(String macAddress) {
+        // TODO Implement setBleDeviceConnected(String macAddress)
+        return null;
     }
 
     @Override
@@ -80,6 +106,7 @@ public class ApplicationDatabaseHelper implements DatabaseHelper {
     }
 
     private static void postDatabaseUpdateEvent(DaoType daoType, UpdateType updateType, @Nullable Long entryID) {
+        Log.d(TAG, "Posting database update event!");
         EventBus.getDefault().post(new DatabaseUpdateEvent(daoType, updateType, entryID));
     }
 }

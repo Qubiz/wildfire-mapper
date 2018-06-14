@@ -18,8 +18,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import nl.dronexpert.wildfiremapper.R;
 import nl.dronexpert.wildfiremapper.data.database.model.BleDevice;
+import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
 
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic.Icon;
@@ -29,7 +32,6 @@ import static com.mikepenz.material_design_iconic_typeface_library.MaterialDesig
  */
 public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
 
-    private Context context;
     private ArrayList<BleDevice> scanResults;
     private OnItemClickListener onItemClickListener;
 
@@ -46,7 +48,7 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
             convertView = inflater.inflate(R.layout.scan_list_item, parent, false);
         }
 
@@ -62,9 +64,9 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
         textViewName.setText(name);
         textViewMacAddress.setText(scanResult.getMacAddress());
 
-        imageViewConnectionState.setImageDrawable(new IconicsDrawable(context)
+        imageViewConnectionState.setImageDrawable(new IconicsDrawable(getContext())
                 .icon(scanResult.getIsConnected() ? Icon.gmi_bluetooth_connected : Icon.gmi_bluetooth)
-                .color(context.getResources().getColor(R.color.colorPrimaryDark))
+                .color(getContext().getResources().getColor(R.color.colorPrimaryDark))
                 .sizeDp(16));
 
         return convertView;
@@ -92,6 +94,7 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
     @Override
     public void addAll(BleDevice... devices) {
         scanResults.addAll(Arrays.asList(devices));
+        notifyDataSetChanged();
     }
 
     @Override

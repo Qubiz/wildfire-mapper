@@ -1,12 +1,10 @@
-package nl.dronexpert.wildfiremapper.ui.main;
+package nl.dronexpert.wildfiremapper.ui.map;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -26,14 +24,13 @@ import butterknife.ButterKnife;
 import nl.dronexpert.wildfiremapper.R;
 import nl.dronexpert.wildfiremapper.ui.base.BaseActivity;
 import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanActivity;
-import nl.dronexpert.wildfiremapper.ui.main.mvp.MainMvpPresenter;
-import nl.dronexpert.wildfiremapper.ui.main.mvp.MainMvpView;
-import nl.dronexpert.wildfiremapper.ui.splash.SplashActivity;
+import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpPresenter;
+import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpView;
 
-public class MainActivity extends BaseActivity implements MainMvpView {
+public class MapActivity extends BaseActivity implements MapMvpView {
 
     @Inject
-    MainMvpPresenter<MainMvpView> presenter;
+    MapMvpPresenter<MapMvpView> presenter;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -47,7 +44,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     private ActionBarDrawerToggle drawerToggle;
 
     public static Intent getStartIntent(Context context) {
-        return new Intent(context, MainActivity.class);
+        return new Intent(context, MapActivity.class);
     }
 
     @Override
@@ -77,7 +74,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 

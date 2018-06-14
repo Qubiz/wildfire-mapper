@@ -12,9 +12,9 @@ import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanPresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanResultsAdapter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpView;
-import nl.dronexpert.wildfiremapper.ui.main.MainPresenter;
-import nl.dronexpert.wildfiremapper.ui.main.mvp.MainMvpPresenter;
-import nl.dronexpert.wildfiremapper.ui.main.mvp.MainMvpView;
+import nl.dronexpert.wildfiremapper.ui.map.MapPresenter;
+import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpPresenter;
+import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpView;
 import nl.dronexpert.wildfiremapper.ui.splash.SplashPresenter;
 import nl.dronexpert.wildfiremapper.ui.splash.mvp.SplashMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.splash.mvp.SplashMvpView;
@@ -60,7 +60,7 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    MainMvpPresenter<MainMvpView> provideMainPresenter(MainPresenter<MainMvpView> presenter) {
+    MapMvpPresenter<MapMvpView> provideMainPresenter(MapPresenter<MapMvpView> presenter) {
         return presenter;
     }
 

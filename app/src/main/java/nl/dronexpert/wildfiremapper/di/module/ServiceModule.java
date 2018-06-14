@@ -2,6 +2,8 @@ package nl.dronexpert.wildfiremapper.di.module;
 
 import android.app.Service;
 
+import com.polidea.rxandroidble2.RxBleClient;
+
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;

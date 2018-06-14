@@ -76,6 +76,7 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView,
         View snackbarView = snackbar.getView();
         TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.white));
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         snackbar.show();
     }
 
@@ -96,9 +97,9 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView,
     @Override
     public void showMessage(String message) {
         if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            showSnackBar(message);
         } else {
-            Toast.makeText(this, getString(R.string.some_error), Toast.LENGTH_SHORT).show();
+            showSnackBar(getString(R.string.some_error));
         }
     }
 

@@ -55,7 +55,7 @@
         app:itemBackground="@color/white"
         app:itemIconTint="@color/black_effective"
         app:itemTextColor="@color/black_effective"
-        app:menu="@menu/drawer">
+        app:menu="@menu/menu_drawer">
 
     </android.support.design.widget.NavigationView>
 

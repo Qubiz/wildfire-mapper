@@ -3,6 +3,8 @@ package nl.dronexpert.wildfiremapper.di.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.polidea.rxandroidble2.RxBleClient;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -18,6 +20,8 @@ import nl.dronexpert.wildfiremapper.data.preferences.ApplicationPreferencesHelpe
 import nl.dronexpert.wildfiremapper.data.preferences.PreferencesHelper;
 import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
 import nl.dronexpert.wildfiremapper.di.annotations.DatabaseInfo;
+import nl.dronexpert.wildfiremapper.services.ServiceConnectionHandler;
+import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
 import nl.dronexpert.wildfiremapper.utils.AppConstants;
 
 /**
@@ -71,6 +75,22 @@ public class ApplicationModule {
     @DatabaseInfo
     String provideDatabaseName() {
         return AppConstants.DB_NAME;
+    }
+
+    @Provides
+    RxBleClient provideRxBleClient(@ApplicationContext Context context) {
+        return RxBleClient.create(context);
+    }
+
+    @Provides
+    @Singleton
+    ServiceConnectionHandler provideServiceHandler() {
+        return new ServiceConnectionHandler();
+    }
+
+    @Provides
+    MLDPDeviceScanService provideBleDeviceScanService(ServiceConnectionHandler serviceConnectionHandler) {
+        return serviceConnectionHandler.getDeviceScanService();
     }
 
 }

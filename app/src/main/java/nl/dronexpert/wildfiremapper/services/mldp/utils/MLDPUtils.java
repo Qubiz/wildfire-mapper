@@ -1,7 +1,12 @@
-package nl.dronexpert.wildfiremapper.services.ble.mldp;
+package nl.dronexpert.wildfiremapper.services.mldp.utils;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.content.Intent;
+
+import com.polidea.rxandroidble2.RxBleClient;
 
 public final class MLDPUtils {
 
@@ -41,6 +46,10 @@ public final class MLDPUtils {
     public static boolean isPrivateService(BluetoothGattService service) {
         return service.getUuid().equals(MLDPConstants.UUID_MLDP_PRIVATE_SERVICE)
                 || service.getUuid().equals(MLDPConstants.UUID_TRANSPARENT_PRIVATE_SERVICE);
+    }
+
+    public static boolean isBleClientReady(RxBleClient rxBleClient) {
+        return rxBleClient.getState() == RxBleClient.State.READY;
     }
 
     private MLDPUtils() {

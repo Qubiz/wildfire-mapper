@@ -27,14 +27,16 @@
         </activity>
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.map.MapActivity"
             android:launchMode="singleTop">
         </activity>
 
         <activity android:name=".ui.devicescan.DeviceScanActivity"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.main.MainActivity"/>
+            android:parentActivityName=".ui.map.MapActivity"/>
 
-        <service android:name=".services.ble.BleDeviceScanService" />
+        <service android:name=".services.mldp.MLDPDeviceScanService" />
+        <service android:name=".services.mldp.MLDPConnectionService" />
+        <service android:name=".services.mldp.MLDPDataReceiverService" />
     </application>
 </manifest>

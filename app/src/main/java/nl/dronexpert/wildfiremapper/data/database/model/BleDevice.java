@@ -12,7 +12,7 @@ import org.greenrobot.greendao.annotation.Unique;
 @Entity(nameInDb = "ble_device")
 public class BleDevice {
 
-    @Id(autoincrement = true)
+    @Id(autoincrement = false)
     private Long id;
 
     @Property(nameInDb = "name")

@@ -1,4 +1,9 @@
-package nl.dronexpert.wildfiremapper.services.ble.mldp;
+package nl.dronexpert.wildfiremapper.services.mldp.utils;
+
+import android.os.ParcelUuid;
+
+import com.polidea.rxandroidble2.scan.ScanFilter;
+import com.polidea.rxandroidble2.scan.ScanSettings;
 
 import java.util.UUID;
 
@@ -52,5 +57,14 @@ public final class MLDPConstants {
      */
     public static final UUID UUID_CHAR_NOTIFICATION_DESCRIPTOR
             = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+    public static final ScanSettings SCAN_SETTINGS = new ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+            .build();
+
+    public static final ScanFilter SCAN_FILTER_MLDP_PRIVATE_SERVICE = new ScanFilter.Builder()
+            .setServiceUuid(new ParcelUuid(MLDPConstants.UUID_MLDP_PRIVATE_SERVICE))
+            .build();
 
 }
