@@ -3,6 +3,7 @@ package nl.dronexpert.wildfiremapper.di.component;
 import dagger.Component;
 import nl.dronexpert.wildfiremapper.di.annotations.PerService;
 import nl.dronexpert.wildfiremapper.di.module.ServiceModule;
+import nl.dronexpert.wildfiremapper.services.location.LocationService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPConnectionService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDataReceiverService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
@@ -16,4 +17,5 @@ public interface ServiceComponent {
     void inject(MLDPDeviceScanService mldpDeviceScanService);
     void inject(MLDPConnectionService mldpConnectionService);
     void inject(MLDPDataReceiverService mldpDataReceiverService);
+    void inject(LocationService locationService);
 }

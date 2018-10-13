@@ -1,5 +1,8 @@
 package nl.dronexpert.wildfiremapper.ui.base;
 
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -36,6 +39,15 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
     public void onDetach() {
         compositeDisposable.dispose();
         mvpView = null;
+    }
+
+    @Override
+    public void onLocationPermissionsRequest(@NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getMvpView().showMessage("Permission granted");
+        } else {
+            getMvpView().showMessage("Permission denied");
+        }
     }
 
     public boolean isViewAttached() {

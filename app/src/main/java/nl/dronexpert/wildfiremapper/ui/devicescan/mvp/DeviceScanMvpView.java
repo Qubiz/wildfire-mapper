@@ -8,11 +8,14 @@ import nl.dronexpert.wildfiremapper.ui.base.mvp.MvpView;
 
 public interface DeviceScanMvpView extends MvpView {
     //TODO Implement methods to update the view
-    void addBleDevices(List<BleDevice> deviceList);
-    void addBleDevice(BleDevice bleDevice);
-    void clearBleDevices();
-    void requestLocationPermission();
+    void clearDevices();
     void requestEnableBluetooth();
     void showScanStarted(long duration);
     void showScanFinished();
+    void showDevices(List<BleDevice> deviceList);
+    void showDevice(BleDevice bleDevice);
+    void showDeviceConnected(String name, String macAddress);
+    void showDeviceConnecting(String name, String macAddress);
+    void showDeviceDisconnecting(String name, String macAddress);
+    void showDeviceDisconnected(String name, String macAddress);
 }

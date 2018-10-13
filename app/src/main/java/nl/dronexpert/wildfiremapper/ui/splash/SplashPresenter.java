@@ -1,5 +1,8 @@
 package nl.dronexpert.wildfiremapper.ui.splash;
 
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -30,12 +33,11 @@ public class SplashPresenter<V extends SplashMvpView> extends BasePresenter<V> i
     public void onAttach(V mvpView) {
         super.onAttach(mvpView);
 
+        getMvpView().requestLocationPermission();
+
         getCompositeDisposable().add(Completable.timer(2000, TimeUnit.MILLISECONDS)
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(() -> getMvpView().openMainActivity()));
     }
-
-
-
 
 }

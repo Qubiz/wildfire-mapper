@@ -3,6 +3,8 @@ package nl.dronexpert.wildfiremapper.di.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.github.pwittchen.reactivesensors.library.ReactiveSensors;
+import com.patloew.rxlocation.RxLocation;
 import com.polidea.rxandroidble2.RxBleClient;
 
 import javax.inject.Singleton;
@@ -21,6 +23,9 @@ import nl.dronexpert.wildfiremapper.data.preferences.PreferencesHelper;
 import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
 import nl.dronexpert.wildfiremapper.di.annotations.DatabaseInfo;
 import nl.dronexpert.wildfiremapper.services.ServiceConnectionHandler;
+import nl.dronexpert.wildfiremapper.services.location.LocationService;
+import nl.dronexpert.wildfiremapper.services.mldp.MLDPConnectionService;
+import nl.dronexpert.wildfiremapper.services.mldp.MLDPDataReceiverService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
 import nl.dronexpert.wildfiremapper.utils.AppConstants;
 
@@ -83,6 +88,16 @@ public class ApplicationModule {
     }
 
     @Provides
+    RxLocation provideRxLocation(@ApplicationContext Context context) {
+        return new RxLocation(context);
+    }
+
+    @Provides
+    ReactiveSensors reactiveSensors(@ApplicationContext Context context) {
+        return new ReactiveSensors(context);
+    }
+
+    @Provides
     @Singleton
     ServiceConnectionHandler provideServiceHandler() {
         return new ServiceConnectionHandler();
@@ -92,5 +107,21 @@ public class ApplicationModule {
     MLDPDeviceScanService provideBleDeviceScanService(ServiceConnectionHandler serviceConnectionHandler) {
         return serviceConnectionHandler.getDeviceScanService();
     }
+
+    @Provides
+    MLDPDataReceiverService provideMLDPDataReceivedService(ServiceConnectionHandler serviceConnectionHandler) {
+        return serviceConnectionHandler.getDataReceiverService();
+    }
+
+    @Provides
+    MLDPConnectionService provideMLDPConnectionService(ServiceConnectionHandler serviceConnectionHandler) {
+        return serviceConnectionHandler.getConnectionService();
+    }
+
+    @Provides
+    LocationService provideLocationService(ServiceConnectionHandler serviceConnectionHandler) {
+        return serviceConnectionHandler.getLocationService();
+    }
+
 
 }

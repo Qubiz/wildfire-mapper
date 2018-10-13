@@ -3,10 +3,12 @@ package nl.dronexpert.wildfiremapper.services.mldp.utils;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 
 import com.polidea.rxandroidble2.RxBleClient;
+import com.polidea.rxandroidble2.RxBleConnection;
 
 public final class MLDPUtils {
 
@@ -52,7 +54,17 @@ public final class MLDPUtils {
         return rxBleClient.getState() == RxBleClient.State.READY;
     }
 
+    public static void setWriteTypeNoResponse(BluetoothGattCharacteristic characteristic) {
+        characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+    }
+
+    public static void enableNotifications(BluetoothGattCharacteristic transparentTxDataCharacteristic, RxBleConnection rxBleConnection) {
+        BluetoothGattDescriptor descriptor = transparentTxDataCharacteristic.getDescriptor(MLDPConstants.UUID_CHAR_NOTIFICATION_DESCRIPTOR);
+        rxBleConnection.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    }
+
     private MLDPUtils() {
         // This class is not publicly instantiable
     }
+
 }

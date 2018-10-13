@@ -3,8 +3,8 @@ package nl.dronexpert.wildfiremapper.data.database.model;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
-import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Unique;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by Mathijs de Groot on 12/06/2018.

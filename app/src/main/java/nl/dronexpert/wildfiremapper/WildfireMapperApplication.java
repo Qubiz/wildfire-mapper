@@ -3,7 +3,9 @@ package nl.dronexpert.wildfiremapper;
 import android.app.Application;
 import android.content.Context;
 
+import com.androidnetworking.AndroidNetworking;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.rx2androidnetworking.Rx2AndroidNetworking;
 
 import javax.inject.Inject;
 
@@ -12,6 +14,7 @@ import nl.dronexpert.wildfiremapper.di.component.ApplicationComponent;
 import nl.dronexpert.wildfiremapper.di.component.DaggerApplicationComponent;
 import nl.dronexpert.wildfiremapper.di.module.ApplicationModule;
 import nl.dronexpert.wildfiremapper.services.ServiceConnectionHandler;
+import nl.dronexpert.wildfiremapper.services.location.LocationService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPConnectionService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDataReceiverService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
@@ -48,6 +51,8 @@ public class WildfireMapperApplication extends Application {
         bindServices();
 
         Mapbox.getInstance(this, AppConstants.MAPBOX_TOKEN);
+
+        AndroidNetworking.initialize(getApplicationContext());
     }
 
     public ApplicationComponent getComponent() {
@@ -55,9 +60,10 @@ public class WildfireMapperApplication extends Application {
     }
 
     private void bindServices() {
+        bindService(MLDPDataReceiverService.getStartIntent(this), serviceConnectionHandler, Context.BIND_AUTO_CREATE);
         bindService(MLDPDeviceScanService.getStartIntent(this), serviceConnectionHandler, Context.BIND_AUTO_CREATE);
         bindService(MLDPConnectionService.getStartIntent(this), serviceConnectionHandler, Context.BIND_AUTO_CREATE);
-        bindService(MLDPDataReceiverService.getStartIntent(this), serviceConnectionHandler, Context.BIND_AUTO_CREATE);
+        bindService(LocationService.getStartIntent(this), serviceConnectionHandler, Context.BIND_AUTO_CREATE);
     }
 
 }

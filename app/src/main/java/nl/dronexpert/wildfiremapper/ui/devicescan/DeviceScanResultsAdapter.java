@@ -20,9 +20,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import nl.dronexpert.wildfiremapper.R;
 import nl.dronexpert.wildfiremapper.data.database.model.BleDevice;
 import nl.dronexpert.wildfiremapper.di.annotations.ApplicationContext;
+import nl.dronexpert.wildfiremapper.utils.CommonUtils;
 
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic.Icon;
@@ -86,6 +88,11 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
     @Override
     public void add(@Nullable BleDevice device) {
         if (device != null) {
+            for (BleDevice bleDevice : scanResults) {
+                if (bleDevice.getMacAddress().equals(device.getMacAddress())) {
+                    return;
+                }
+            }
             scanResults.add(device);
             notifyDataSetChanged();
         }
@@ -93,14 +100,14 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
 
     @Override
     public void addAll(BleDevice... devices) {
-        scanResults.addAll(Arrays.asList(devices));
-        notifyDataSetChanged();
+        addAll(Arrays.asList(devices));
     }
 
     @Override
-    public void addAll(@NonNull Collection<? extends BleDevice> collection) {
-        scanResults.addAll(collection);
-        notifyDataSetChanged();
+    public void addAll(@NonNull Collection<? extends BleDevice> devices) {
+        for (BleDevice device : devices) {
+            add(device);
+        }
     }
 
     @Override
@@ -109,4 +116,22 @@ public class DeviceScanResultsAdapter extends ArrayAdapter<BleDevice> {
         notifyDataSetChanged();
     }
 
+    public void setDeviceConnected(String name, String macAddress, boolean connected) {
+        for (BleDevice device : scanResults) {
+            if (device.getMacAddress().equals(macAddress)) {
+                device.setIsConnected(connected);
+                notifyDataSetChanged();
+                return;
+            }
+        }
+
+        BleDevice bleDevice = new BleDevice();
+        bleDevice.setName(name);
+        bleDevice.setMacAddress(macAddress);
+        bleDevice.setIsConnected(connected);
+        bleDevice.setCreatedAt(CommonUtils.getTimeStamp());
+        bleDevice.setUpdatedAt(CommonUtils.getTimeStamp());
+
+        scanResults.add(bleDevice);
+    }
 }

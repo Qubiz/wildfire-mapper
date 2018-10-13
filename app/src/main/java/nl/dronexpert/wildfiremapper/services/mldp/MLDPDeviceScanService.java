@@ -52,13 +52,8 @@ public class MLDPDeviceScanService extends BaseService {
             Observable<ScanResult> scanResultObservable = getScanObservable(scanDurationMilliseconds,
                     TimeUnit.MILLISECONDS, SCAN_SETTINGS, SCAN_FILTER_MLDP_PRIVATE_SERVICE);
 
-            getCompositeDisposable().add(getDataManager().clearBleDevices()
-                    .doOnComplete(() -> {
-                        scanDisposable = scanResultObservable.subscribe(this::onScanResult);
-                        getCompositeDisposable().add(scanDisposable);
-                    }).subscribe());
-
-
+            scanDisposable = scanResultObservable.subscribe(this::onScanResult);
+            getCompositeDisposable().add(scanDisposable);
         }
     }
 
@@ -84,35 +79,29 @@ public class MLDPDeviceScanService extends BaseService {
                 .doOnDispose(this::onDispose)
                 .doOnComplete(this::stopScan)
                 .doOnSubscribe(subscriber -> {
-                    EventBus.getDefault().post(new ScanEvent(State.STARTED));
+                    EventBus.getDefault().post(new ScanEvent(State.STARTED, null));
                 });
     }
 
     private void onError(Throwable throwable) {
-        EventBus.getDefault().post(new ScanEvent(State.ERROR));
+        EventBus.getDefault().post(new ScanEvent(State.ERROR, null));
     }
 
     private void onDispose() {
-        EventBus.getDefault().post(new ScanEvent(State.FINISHED));
+        EventBus.getDefault().post(new ScanEvent(State.FINISHED, null));
     }
 
     private void onScanResult(ScanResult scanResult) {
         RxBleDevice rxBleDevice = scanResult.getBleDevice();
 
-        getCompositeDisposable().add(getDataManager().containsDevice(rxBleDevice.getMacAddress())
-                .subscribe(entryExists -> {
-            if (!entryExists) {
+        BleDevice bleDevice = new BleDevice();
+        bleDevice.setName(rxBleDevice.getName());
+        bleDevice.setMacAddress(rxBleDevice.getMacAddress());
+        bleDevice.setCreatedAt(CommonUtils.getTimeStamp());
+        bleDevice.setUpdatedAt(CommonUtils.getTimeStamp());
+        bleDevice.setIsConnected(rxBleDevice.getConnectionState() == RxBleConnectionState.CONNECTED);
 
-                BleDevice bleDevice = new BleDevice();
-                bleDevice.setName(rxBleDevice.getName());
-                bleDevice.setMacAddress(rxBleDevice.getMacAddress());
-                bleDevice.setCreatedAt(CommonUtils.getTimeStamp());
-                bleDevice.setUpdatedAt(CommonUtils.getTimeStamp());
-                bleDevice.setIsConnected(rxBleDevice.getConnectionState() == RxBleConnectionState.CONNECTED);
-
-                getDataManager().insertBleDevice(bleDevice).subscribe();
-            }
-        }));
+        EventBus.getDefault().post(new ScanEvent(State.NEW_SCAN_RESULT, bleDevice));
     }
 
     @Override

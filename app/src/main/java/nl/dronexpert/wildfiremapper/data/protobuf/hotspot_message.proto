@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_outer_classname = "HotspotMessageProto";
+
+message Hotspot {
+    Location location = 1;
+    double temperature = 2;
+    FlightInfo flight_info = 3;
+}
+
+message Location {
+    double latitude = 1;
+    double longitude = 2;
+    double altitude = 3;
+}
+
+message FlightInfo {
+    Location drone_location = 1;
+    string drone_name = 2;
+    uint32 flight_id = 3;
+}

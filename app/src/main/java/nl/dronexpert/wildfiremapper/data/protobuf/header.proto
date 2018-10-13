@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_outer_classname = "HeaderProto";
+
+message Header {
+    fixed32 message_type = 1;
+    fixed32 message_size = 2;
+}

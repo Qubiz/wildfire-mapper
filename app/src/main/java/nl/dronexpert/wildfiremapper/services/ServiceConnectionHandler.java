@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import nl.dronexpert.wildfiremapper.services.base.BaseService;
+import nl.dronexpert.wildfiremapper.services.location.LocationService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPConnectionService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDataReceiverService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
@@ -27,6 +28,9 @@ public class ServiceConnectionHandler implements ServiceConnection {
     private MLDPDataReceiverService dataReceiverService;
     private boolean dataReceiverServiceBound = false;
 
+    private LocationService locationService;
+    private boolean locationServiceBound = false;
+
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         if (name.getClassName().equals(MLDPDeviceScanService.class.getName())) {
@@ -37,6 +41,14 @@ public class ServiceConnectionHandler implements ServiceConnection {
             Log.d(TAG, "Connected to " + MLDPDeviceScanService.TAG);
         }
 
+        if (name.getClassName().equals(MLDPDataReceiverService.class.getName())) {
+            MLDPDataReceiverService.LocalBinder binder = (MLDPDataReceiverService.LocalBinder) service;
+            dataReceiverService = (MLDPDataReceiverService) binder.getService();
+            dataReceiverServiceBound = true;
+
+            Log.d(TAG, "Connected to " + MLDPDataReceiverService.TAG);
+        }
+
         if (name.getClassName().equals(MLDPConnectionService.class.getName())) {
             MLDPConnectionService.LocalBinder binder = (MLDPConnectionService.LocalBinder) service;
             connectionService = (MLDPConnectionService) binder.getService();
@@ -45,12 +57,12 @@ public class ServiceConnectionHandler implements ServiceConnection {
             Log.d(TAG, "Connected to " + MLDPConnectionService.TAG);
         }
 
-        if (name.getClassName().equals(MLDPDataReceiverService.class.getName())) {
-            MLDPDataReceiverService.LocalBinder binder = (MLDPDataReceiverService.LocalBinder) service;
-            dataReceiverService = (MLDPDataReceiverService) binder.getService();
-            dataReceiverServiceBound = true;
+        if (name.getClassName().equals(LocationService.class.getName())) {
+            LocationService.LocalBinder binder = (LocationService.LocalBinder) service;
+            locationService = (LocationService) binder.getService();
+            locationServiceBound = true;
 
-            Log.d(TAG, "Connected to " + MLDPDataReceiverService.TAG);
+            Log.d(TAG, "Connected to " + LocationService.TAG);
         }
     }
 
@@ -73,6 +85,12 @@ public class ServiceConnectionHandler implements ServiceConnection {
 
             Log.d(TAG, "Disconnected from " + MLDPDataReceiverService.TAG);
         }
+
+        if (name.getClassName().equals(LocationService.class.getName())) {
+            locationServiceBound = false;
+
+            Log.d(TAG, "Disconnected from " + LocationService.TAG);
+        }
     }
 
     public MLDPDeviceScanService getDeviceScanService() {
@@ -87,6 +105,10 @@ public class ServiceConnectionHandler implements ServiceConnection {
         return dataReceiverService;
     }
 
+    public LocationService getLocationService() {
+        return locationService;
+    }
+
     public boolean isDeviceScanServiceBound() {
         return deviceScanServiceBound;
     }
@@ -97,5 +119,9 @@ public class ServiceConnectionHandler implements ServiceConnection {
 
     public boolean isDataReceiverServiceBound() {
         return dataReceiverServiceBound;
+    }
+
+    public boolean isLocationServiceBound() {
+        return locationServiceBound;
     }
 }

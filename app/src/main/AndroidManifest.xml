@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <uses-feature android:name="android.hardware.location.gps" />
+
     <application
         android:name=".WildfireMapperApplication"
         android:allowBackup="false"
@@ -38,5 +40,6 @@
         <service android:name=".services.mldp.MLDPDeviceScanService" />
         <service android:name=".services.mldp.MLDPConnectionService" />
         <service android:name=".services.mldp.MLDPDataReceiverService" />
+        <service android:name=".services.location.LocationService" />
     </application>
 </manifest>

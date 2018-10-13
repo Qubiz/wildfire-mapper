@@ -41,7 +41,6 @@ import static com.mikepenz.material_design_iconic_typeface_library.MaterialDesig
 public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpView {
 
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
-    private static final int REQUEST_PERMISSION_LOCATION = 2;
 
     @Inject
     DeviceScanMvpPresenter<DeviceScanMvpView> presenter;
@@ -60,7 +59,7 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
 
     ProgressBarAnimation progressBarAnimation;
 
-    private boolean isScanning = false;
+    private boolean isBusy = false;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, DeviceScanActivity.class);
@@ -89,8 +88,8 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
                 .color(getResources().getColor(R.color.white))
                 .sizeDp(24));
 
-        menuItemScan.setVisible(!isScanning);
-        menuItemProgress.setVisible(isScanning);
+        menuItemScan.setVisible(!isBusy);
+        menuItemProgress.setVisible(isBusy);
 
         return true;
     }
@@ -117,7 +116,7 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent upIntent = NavUtils.getParentActivityIntent(this);
-                Objects.requireNonNull(upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                Objects.requireNonNull(Objects.requireNonNull(upIntent).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                     TaskStackBuilder.create(this)
                             .addNextIntentWithParentStack(upIntent)
@@ -139,24 +138,18 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
     }
 
     @Override
-    public void addBleDevices(List<BleDevice> deviceList) {
-        scanResultsAdapter.addAll(deviceList);
+    public void showDevices(List<BleDevice> devices) {
+        scanResultsAdapter.addAll(devices);
     }
 
     @Override
-    public void addBleDevice(BleDevice bleDevice) {
-
-        scanResultsAdapter.add(bleDevice);
+    public void showDevice(BleDevice device) {
+        scanResultsAdapter.add(device);
     }
 
     @Override
-    public void clearBleDevices() {
+    public void clearDevices() {
         scanResultsAdapter.clear();
-    }
-
-    @Override
-    public void requestLocationPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_LOCATION);
     }
 
     @Override
@@ -172,27 +165,47 @@ public class DeviceScanActivity extends BaseActivity implements DeviceScanMvpVie
         progressBarAnimation.setDuration(duration);
         progressBar.startAnimation(progressBarAnimation);
 
-        isScanning = true;
-        invalidateOptionsMenu();
+        setBusy(true);
     }
 
 
     @Override
     public void showScanFinished() {
         devicesListView.setOnItemClickListener(presenter);
-
-        isScanning = false;
-        invalidateOptionsMenu();
+        setBusy(false);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_PERMISSION_LOCATION:
-                presenter.onLocationPermissionsRequest(permissions, grantResults);
-                return;
+    public void showDeviceConnected(String name, String macAddress) {
+        scanResultsAdapter.setDeviceConnected(name, macAddress, true);
+        setBusy(false);
+    }
+
+    @Override
+    public void showDeviceConnecting(String name, String macAddress) {
+        setBusy(true);
+    }
+
+    @Override
+    public void showDeviceDisconnecting(String name, String macAddress) {
+        setBusy(true);
+    }
+
+    @Override
+    public void showDeviceDisconnected(String name, String macAddress) {
+        scanResultsAdapter.setDeviceConnected(name, macAddress, false);
+        setBusy(false);
+    }
+
+    public void setBusy(boolean busy) {
+        isBusy = busy;
+        invalidateOptionsMenu();
+
+        if (isBusy) {
+            devicesListView.setOnItemClickListener(null);
+        } else {
+            devicesListView.setOnItemClickListener(presenter);
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

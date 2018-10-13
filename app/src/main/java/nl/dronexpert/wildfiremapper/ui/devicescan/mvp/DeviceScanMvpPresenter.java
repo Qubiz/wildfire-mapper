@@ -12,6 +12,5 @@ import nl.dronexpert.wildfiremapper.ui.base.mvp.MvpPresenter;
 public interface DeviceScanMvpPresenter<V extends DeviceScanMvpView> extends MvpPresenter<V>, AdapterView.OnItemClickListener {
     //TODO Define interaction methods
     void onMenuItemScanClick();
-    void onLocationPermissionsRequest(@NonNull String[] permissions, @NonNull int[] grantResults);
     void onBluetoothEnableRequest(int resultCode, Intent data);
 }

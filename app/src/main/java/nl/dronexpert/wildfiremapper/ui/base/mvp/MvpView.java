@@ -15,4 +15,5 @@ public interface MvpView {
     void showMessage(@StringRes int resId);
     void showMessage(String message);
     void hideKeyboard();
+    void requestLocationPermission();
 }

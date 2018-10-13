@@ -4,24 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+
+import com.polidea.rxandroidble2.RxBleDevice;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import nl.dronexpert.wildfiremapper.data.DataManager;
-import nl.dronexpert.wildfiremapper.data.database.events.DatabaseUpdateEvent;
 import nl.dronexpert.wildfiremapper.data.database.model.BleDevice;
 import nl.dronexpert.wildfiremapper.di.annotations.ActivityContext;
+import nl.dronexpert.wildfiremapper.services.mldp.MLDPConnectionService;
 import nl.dronexpert.wildfiremapper.services.mldp.MLDPDeviceScanService;
+import nl.dronexpert.wildfiremapper.services.mldp.events.ConnectionEvent;
 import nl.dronexpert.wildfiremapper.services.mldp.events.ScanEvent;
 import nl.dronexpert.wildfiremapper.ui.base.BasePresenter;
 import nl.dronexpert.wildfiremapper.ui.devicescan.mvp.DeviceScanMvpPresenter;
@@ -33,6 +33,7 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
     private static final String TAG = DeviceScanPresenter.class.getSimpleName();
 
     private MLDPDeviceScanService deviceScanService;
+    private MLDPConnectionService connectionService;
 
     private final static long SCAN_DURATION_MILLISECONDS = 10000;
 
@@ -40,10 +41,12 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
     public DeviceScanPresenter(DataManager dataManager,
                                SchedulerProvider schedulerProvider,
                                @ActivityContext CompositeDisposable compositeDisposable,
-                               MLDPDeviceScanService deviceScanService) {
+                               MLDPDeviceScanService deviceScanService,
+                               MLDPConnectionService connectionService) {
         super(dataManager, schedulerProvider, compositeDisposable);
 
         this.deviceScanService = deviceScanService;
+        this.connectionService = connectionService;
     }
 
     @Override
@@ -51,6 +54,12 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
         super.onAttach(mvpView);
 
         EventBus.getDefault().register(this);
+
+        RxBleDevice connectedDevice = connectionService.getConnectedDevice();
+
+        if (connectedDevice != null) {
+            getMvpView().showDeviceConnected(connectedDevice.getName(), connectedDevice.getMacAddress());
+        }
     }
 
     @Override
@@ -63,24 +72,15 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        final BleDevice bleDevice = (BleDevice) adapterView.getItemAtPosition(position);
         // TODO Implement: create a connection
+        BleDevice device = (BleDevice) adapterView.getItemAtPosition(position);
+        connectionService.connect(device.getMacAddress());
     }
 
     @Override
     public void onMenuItemScanClick() {
         if (ready()) {
             deviceScanService.startScan(SCAN_DURATION_MILLISECONDS);
-        }
-         // TODO Check if scan is in progress, if not, start a new scan.
-    }
-
-    @Override
-    public void onLocationPermissionsRequest(@NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getMvpView().showMessage("Permission granted");
-        } else {
-            getMvpView().showMessage("Permission denied");
         }
     }
 
@@ -104,7 +104,7 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
                 getMvpView().requestEnableBluetooth();
                 return false;
             case LOCATION_PERMISSION_NOT_GRANTED:
-                getMvpView().requestLocationPermission();
+                getMvpView().onError("No location permissions granted...");
                 return false;
             case LOCATION_SERVICES_NOT_ENABLED:
                 getMvpView().onError("Please enable location services...");
@@ -114,45 +114,48 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDatabaseUpdateEvent(DatabaseUpdateEvent event) {
-        Log.d(TAG, "Database update event received...");
-        if (event.DAO_TYPE == DatabaseUpdateEvent.DaoType.BLE_DEVICE_DAO) {
-            switch (event.UPDATE_TYPE) {
-                case CLEAR:
-                    getMvpView().clearBleDevices();
-                    break;
-                case INSERT:
-                    getCompositeDisposable().add(getDataManager()
-                            .getBleDevice(event.ENTRY_ID)
-                            .subscribe(getMvpView()::addBleDevice));
-                    break;
-                case SAVE:
-                    getCompositeDisposable().add(getDataManager()
-                            .getAllBleDevices()
-                            .subscribe(getMvpView()::addBleDevices));
-                    break;
-                case LIST_SAVE:
-                    getCompositeDisposable().add(getDataManager()
-                            .getAllBleDevices()
-                            .subscribe(getMvpView()::addBleDevices));
-                    break;
-            }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScanEvent(ScanEvent event) {
         switch (event.SCAN_STATE) {
             case STARTED:
                 getMvpView().showMessage("Scan Started");
+                getMvpView().clearDevices();
+                RxBleDevice connectedDevice = connectionService.getConnectedDevice();
+
+                if (connectedDevice != null) {
+                    getMvpView().showDeviceConnected(connectedDevice.getName(), connectedDevice.getMacAddress());
+                }
                 getMvpView().showScanStarted(SCAN_DURATION_MILLISECONDS);
                 break;
             case ERROR:
                 getMvpView().onError("Error while scanning...");
                 break;
+            case NEW_SCAN_RESULT:
+                getMvpView().showDevice(event.BLE_DEVICE);
+                break;
             case FINISHED:
                 getMvpView().showMessage("Scan Finished");
                 getMvpView().showScanFinished();
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnectionEvent(ConnectionEvent event) {
+        switch (event.STATE) {
+            case CONNECTING:
+                getMvpView().showDeviceConnecting(event.DEVICE_NAME, event.DEVICE_MAC_ADDRESS);
+                getMvpView().showMessage("Connecting to " + event.DEVICE_NAME);
+                break;
+            case CONNECTED:
+                getMvpView().showDeviceConnected(event.DEVICE_NAME, event.DEVICE_MAC_ADDRESS);
+                getMvpView().showMessage("Connected to " + event.DEVICE_NAME);
+                break;
+            case DISCONNECTED:
+                getMvpView().showDeviceDisconnected(event.DEVICE_NAME, event.DEVICE_MAC_ADDRESS);
+                getMvpView().showMessage("Disconnected from " + event.DEVICE_NAME);
+                break;
+            case DISCONNECTING:
+                getMvpView().showDeviceDisconnecting(event.DEVICE_NAME, event.DEVICE_MAC_ADDRESS);
                 break;
         }
     }
