@@ -2,6 +2,7 @@ package nl.dronexpert.wildfiremapper.ui.map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
@@ -42,6 +43,7 @@ import nl.dronexpert.wildfiremapper.ui.devicescan.DeviceScanActivity;
 import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpPresenter;
 import nl.dronexpert.wildfiremapper.ui.map.mvp.MapMvpView;
 import nl.dronexpert.wildfiremapper.utils.CommonUtils;
+import nl.dronexpert.wildfiremapper.utils.LinearGradient;
 
 public class MapActivity extends BaseActivity implements MapMvpView {
 
@@ -66,6 +68,12 @@ public class MapActivity extends BaseActivity implements MapMvpView {
     private Marker userLocationMarker;
     private IconicsDrawable myLocationIcon;
     private IconicsDrawable hotspotIcon;
+    private IconicsDrawable droneIcon;
+
+    private static final int[] GRADIENT_COLORS = new int[] {Color.rgb(255,255,102), Color.YELLOW, Color.RED};
+    private LinearGradient linearGradient = new LinearGradient(GRADIENT_COLORS);
+    private double MIN_TEMPERATURE_VALUE = 30.0;
+    private double MAX_TEMPERATURE_VALUE = 150.0;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -148,13 +156,17 @@ public class MapActivity extends BaseActivity implements MapMvpView {
         myLocationIcon = new IconicsDrawable(this)
                 .icon(MaterialDesignIconic.Icon.gmi_navigation)
                 .color(getResources().getColor(R.color.white))
-                .sizeDp(24);
+                .sizeDp(10);
 
         hotspotIcon = new IconicsDrawable(this)
                 .icon(MaterialDesignIconic.Icon.gmi_circle)
                 .color(getResources().getColor(R.color.white))
-                .sizeDp(24);
+                .sizeDp(10);
 
+        droneIcon = new IconicsDrawable(this)
+                .icon(MaterialDesignIconic.Icon.gmi_navigation)
+                .color(getResources().getColor(R.color.colorAccent))
+                .sizeDp(10);
 
         mapView.getMapAsync(this);
 
@@ -232,6 +244,7 @@ public class MapActivity extends BaseActivity implements MapMvpView {
 
     @Override
     public void onMapReady(MapboxMap map) {
+        map.getUiSettings().setRotateGesturesEnabled(false);
         this.map = map;
         presenter.onMapReady(map);
     }
@@ -267,11 +280,23 @@ public class MapActivity extends BaseActivity implements MapMvpView {
     @Override
     public void showHotspot(HotspotMessageProto.Hotspot hotspot) {
         if (map != null) {
-           map.addMarker(new MarkerOptions()
+
+            double r = normalize(hotspot.getTemperature(), MIN_TEMPERATURE_VALUE, MAX_TEMPERATURE_VALUE);
+            hotspotIcon.color(linearGradient.getColor(r));
+
+            map.addMarker(new MarkerOptions()
                    .icon(IconFactory.getInstance(this).fromBitmap(CommonUtils.iconicsDrawableToBitmap(hotspotIcon)))
                    .position(new LatLng(hotspot.getLocation().getLatitude(), hotspot.getLocation().getLongitude()))
                    .setSnippet("Temperature: " + hotspot.getTemperature()));
+
+            map.addMarker(new MarkerOptions()
+                   .icon(IconFactory.getInstance(this).fromBitmap(CommonUtils.rotateBitmap(CommonUtils.iconicsDrawableToBitmap(droneIcon),
+                           (float) (hotspot.getDroneInfo().getHeading() * 180 / Math.PI))))
+                   .position(new LatLng(hotspot.getDroneInfo().getLocation().getLatitude(), hotspot.getDroneInfo().getLocation().getLongitude())));
         }
     }
 
+    private double normalize(double value, double min, double max) {
+        return (value - min) / (max - min);
+    }
 }

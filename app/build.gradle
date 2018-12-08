@@ -7,11 +7,11 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "nl.dronexpert.wildfiremapper"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -40,8 +40,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
 
     implementation "com.jakewharton:butterknife:"                   + butterKnifeVersion
     annotationProcessor "com.jakewharton:butterknife-compiler:"     + butterKnifeVersion
@@ -69,7 +69,7 @@ dependencies {
     implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.4@aar'
 
     implementation 'com.patloew.rxlocation:rxlocation:1.0.5'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
 
     implementation 'com.github.pwittchen:reactivesensors-rx2:0.2.0'
 

@@ -35,7 +35,7 @@ public class DeviceScanPresenter<V extends DeviceScanMvpView> extends BasePresen
     private MLDPDeviceScanService deviceScanService;
     private MLDPConnectionService connectionService;
 
-    private final static long SCAN_DURATION_MILLISECONDS = 10000;
+    private final static long SCAN_DURATION_MILLISECONDS = 5000;
 
     @Inject
     public DeviceScanPresenter(DataManager dataManager,

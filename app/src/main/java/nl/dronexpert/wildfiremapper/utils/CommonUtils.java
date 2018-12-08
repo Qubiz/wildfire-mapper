@@ -72,4 +72,6 @@ public final class CommonUtils {
                 bitmap.getWidth(), bitmap.getHeight(),
                 matrix, true);
     }
+
+
 }

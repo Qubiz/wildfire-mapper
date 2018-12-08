@@ -96,6 +96,10 @@ public class MapPresenter<V extends MapMvpView> extends BasePresenter<V> impleme
     public void onMapReady(MapboxMap map) {
         this.map = map;
 
+        HotspotMessageProto.Hotspot hotspot = HotspotMessageProto.Hotspot.newBuilder()
+                .build();
+
+        postHotspot(hotspot);
     }
 
     @Override
@@ -141,24 +145,28 @@ public class MapPresenter<V extends MapMvpView> extends BasePresenter<V> impleme
     }
 
     private void postHotspot(HotspotMessageProto.Hotspot hotspot) {
-        Point point = Point.fromLngLat(hotspot.getLocation().getLatitude(), hotspot.getLocation().getLongitude());
-        Feature feature = Feature.fromGeometry(point);
-        String phNumber = "PH-111";
-        feature.addStringProperty("ph_number", phNumber);
-        Hashids hashids = new Hashids(phNumber);
-        long random = 1L + (long) (Math.random() * (Hashids.MAX_NUMBER - 1L));
-        feature.addStringProperty("id", hashids.encode(random));
-        feature.addStringProperty("timestamp", CommonUtils.getTimeStamp());
-        feature.addStringProperty("lat_drone", String.valueOf(hotspot.getLocation().getLatitude()));
-        feature.addStringProperty("lon_drone", String.valueOf(hotspot.getLocation().getLongitude()));
-        feature.addStringProperty("z_drone", String.valueOf(0));
-        feature.addStringProperty("lat_haard", String.valueOf(hotspot.getLocation().getLatitude()));
-        feature.addStringProperty("lon_haard", String.valueOf(hotspot.getLocation().getLongitude()));
-        feature.addStringProperty("temperatuur", String.valueOf(hotspot.getTemperature()));
-
-        Disposable disposable = getDataManager().postPointData(FeatureCollection.fromFeature(feature).toJson())
-                .subscribeOn(getSchedulerProvider().io())
-                .subscribe(response -> Log.d(TAG, response.toString()));
-        getCompositeDisposable().add(disposable);
+//        TODO: Temporarily disabled
+//        Point point = Point.fromLngLat(hotspot.getLocation().getLatitude(), hotspot.getLocation().getLongitude());
+//        Feature feature = Feature.fromGeometry(point);
+//        String phNumber = "PH-111";
+//        feature.addStringProperty("ph_number", phNumber);
+//
+//        Hashids hashids = new Hashids(phNumber);
+//        long random = 1L + (long) (Math.random() * (Hashids.MAX_NUMBER - 1L));
+//
+//        feature.addStringProperty("id", hashids.encode(random));
+//        feature.addStringProperty("timestamp", CommonUtils.getTimeStamp());
+//        feature.addStringProperty("lat_drone", String.valueOf(hotspot.getDroneInfo().getLocation().getLatitude()));
+//        feature.addStringProperty("lon_drone", String.valueOf(hotspot.getDroneInfo().getLocation().getLongitude()));
+//        feature.addStringProperty("z_drone", String.valueOf(hotspot.getDroneInfo().getLocation().getAltitude()));
+//        feature.addStringProperty("heading_drone", String.valueOf(hotspot.getDroneInfo().getHeading()));
+//        feature.addStringProperty("lat_haard", String.valueOf(hotspot.getLocation().getLatitude()));
+//        feature.addStringProperty("lon_haard", String.valueOf(hotspot.getLocation().getLongitude()));
+//        feature.addStringProperty("temperatuur", String.valueOf(hotspot.getTemperature()));
+//
+//        Disposable disposable = getDataManager().postPointData(FeatureCollection.fromFeature(feature).toJson())
+//                .subscribeOn(getSchedulerProvider().io())
+//                .subscribe(response -> Log.d(TAG, response.toString()));
+//        getCompositeDisposable().add(disposable);
     }
 }
